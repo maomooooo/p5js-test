@@ -1204,3 +1204,8 @@ function resetOverrides() {
   overrideShapeType = null;
   overrideLayoutType = null;
 } 
+
+function touchStarted() {
+  mousePressed();
+  return false;
+}
