@@ -1,7 +1,18 @@
 html, body {
   margin: 0;
   padding: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: manipulation;
+}
+main {
+  min-height: 100vh;
+  padding-bottom: 200px;
 }
 canvas {
   display: block;
+  max-width: 100%;
+}
+input[type=range] {
+  touch-action: auto;
 }
