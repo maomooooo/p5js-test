@@ -481,7 +481,7 @@ function resetGlobalState() {
 
 
 function setup() {
-  cnv.elt.style.pointerEvents = 'none';
+
   createColorPaletteHSB(); 
   createCanvas(750, 800);
   population = new Population(9);
@@ -1206,7 +1206,3 @@ function resetOverrides() {
   overrideLayoutType = null;
 } 
 
-function touchStarted() {
-  mousePressed();
-  return false;
-}
