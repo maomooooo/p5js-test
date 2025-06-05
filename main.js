@@ -481,7 +481,6 @@ function resetGlobalState() {
 
 
 function setup() {
-
   createColorPaletteHSB(); 
   createCanvas(750, 800);
   population = new Population(9);
@@ -1205,4 +1204,3 @@ function resetOverrides() {
   overrideShapeType = null;
   overrideLayoutType = null;
 } 
-
