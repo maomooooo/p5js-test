@@ -929,11 +929,10 @@ function mouseMoved() {
 }
 
 function mousePressed() {
- if (inSecondStage || inFinalStage) {
+  if (inSecondStage || inFinalStage) {
     console.log("🚫 鎖定階段，點擊無效");
     return;
   }
-
 
   if (generation >= maxGenerations) return;
 
@@ -952,21 +951,25 @@ function mousePressed() {
     let x = offsetX + col * (cellW + padding);
     let y = offsetY + row * (cellH + padding);
 
-   if (mouseX > x && mouseX < x + cellW && mouseY > y && mouseY < y + cellH) {
-  let original = population.individuals[i];
+    if (mouseX > x && mouseX < x + cellW && mouseY > y && mouseY < y + cellH) {
+      let original = population.individuals[i];
 
-  // ✅ 保留「原始個體」作為下一輪使用對象
-  window.selectedRawIndividual = original;
-  window.selectedIndividual = new Individual(original.genes, original.seed); // 只用來畫圖，不影響原始基因
+      // ✅ 設定原始與複製個體
+      window.selectedRawIndividual = original;
+      window.selectedIndividual = new Individual(original.genes, original.seed);
 
-  snapshotCaptured = false;
-  console.log("✅ 使用者選擇了第", i, "張圖");
-  redraw();
-  clicked = true;
-  break;
-}
+      // ✅ 即時生成圖像快照，避免 draw() 延遲導致問題
+      let pg = createGraphics(cellW, cellH);
+      window.selectedIndividual.display(0, 0, cellW, cellH, pg);
+      window.selectedSnapshot = pg;
+      snapshotCaptured = true;
 
+      console.log("✅ 使用者選擇了第", i, "張圖");
 
+      redraw();
+      clicked = true;
+      break;
+    }
   }
 
   if (!clicked) {
