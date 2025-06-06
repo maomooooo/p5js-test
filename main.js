@@ -495,6 +495,18 @@ function setup() {
 
 // ✅ 顯示完整參數格式（索引 + HSB + 形狀 + 構圖）
 function startSecondStage() {
+// ✅ 補寫選擇圖像，防止畫面已顯示但資料沒設好
+if (!window.selectedIndividual && window.selectedRawIndividual) {
+  window.selectedIndividual = new Individual(window.selectedRawIndividual.genes, window.selectedRawIndividual.seed);
+}
+  
+// ✅ [除錯用] 檢查進入第二階段時的狀態
+console.log("🧠 檢查狀態", {
+  selectedIndividual: window.selectedIndividual,
+  selectedRawIndividual: window.selectedRawIndividual,
+  snapshot: window.selectedSnapshot
+});
+  
   if (!window.selectedIndividual) {
     alert("⚠ 請先選擇一張圖後再進入第二階段！");
     return;
@@ -963,6 +975,12 @@ function mousePressed() {
       window.selectedIndividual.display(0, 0, cellW, cellH, pg);
       window.selectedSnapshot = pg;
       snapshotCaptured = true;
+
+      console.log("✅ 使用者選擇了圖像", {
+  index: i,
+  selectedIndividual: window.selectedIndividual,
+  selectedRawIndividual: window.selectedRawIndividual
+});
 
       console.log("✅ 使用者選擇了第", i, "張圖");
 
