@@ -495,17 +495,24 @@ function setup() {
 
 // ✅ 顯示完整參數格式（索引 + HSB + 形狀 + 構圖）
 function startSecondStage() {
-// ✅ 補寫選擇圖像，防止畫面已顯示但資料沒設好
-if (!window.selectedIndividual && window.selectedRawIndividual) {
-  window.selectedIndividual = new Individual(window.selectedRawIndividual.genes, window.selectedRawIndividual.seed);
-}
-  
-// ✅ [除錯用] 檢查進入第二階段時的狀態
-console.log("🧠 檢查狀態", {
+console.log("🚪 進入第二階段，檢查狀態：", {
   selectedIndividual: window.selectedIndividual,
   selectedRawIndividual: window.selectedRawIndividual,
   snapshot: window.selectedSnapshot
 });
+
+// ✅ 優先從當前 raw 補回（若剛剛選過圖）
+if (!window.selectedIndividual && window.selectedRawIndividual) {
+  console.log("🩹 自動補回 selectedIndividual 從 raw 個體");
+  window.selectedIndividual = new Individual(window.selectedRawIndividual.genes, window.selectedRawIndividual.seed);
+}
+
+// ✅ 若已經清空 raw，則從備份補回（表示 user 進入下一代又後悔）
+if (!window.selectedIndividual && window.lastSelectedRawIndividual) {
+  console.log("🩹 從備份 lastSelectedRawIndividual 補回");
+  window.selectedIndividual = new Individual(window.lastSelectedRawIndividual.genes, window.lastSelectedRawIndividual.seed);
+}
+
   
   if (!window.selectedIndividual) {
     alert("⚠ 請先選擇一張圖後再進入第二階段！");
@@ -978,9 +985,11 @@ function mousePressed() {
 
       console.log("✅ 使用者選擇了圖像", {
   index: i,
-  selectedIndividual: window.selectedIndividual,
-  selectedRawIndividual: window.selectedRawIndividual
+  genes: original.genes,
+  snapshot: window.selectedSnapshot,
+  selectedIndividual: window.selectedIndividual
 });
+
 
       console.log("✅ 使用者選擇了第", i, "張圖");
 
@@ -1007,6 +1016,9 @@ function generateNewSet(selected) {
     return;
   }
 
+  // ✅ 備份目前選擇的個體（供第二階段 fallback 用）
+  window.lastSelectedRawIndividual = rawSelected;
+
   historyStack.push({
     generation,
     population: population.individuals.map(ind => new Individual(ind.genes, ind.seed)),
@@ -1016,7 +1028,7 @@ function generateNewSet(selected) {
   population.evolve(rawSelected, index); // ✅ 原個體進入下一輪
   generation++;
 
-  // ✅ 清除選取狀態
+  // ✅ 清除選取狀態（保持原邏輯）
   window.selectedIndividual = null;
   window.selectedRawIndividual = null;
   snapshotCaptured = false;
@@ -1028,6 +1040,7 @@ function generateNewSet(selected) {
 
   redraw();
 }
+
 
 
 function setupUI() {
@@ -1055,7 +1068,16 @@ backButton.mousePressed(goBack);
 
 secondStageButton = createButton('Next → 第二階段');
 secondStageButton.position(width / 2 - 60, height + 10);
-secondStageButton.mousePressed(startSecondStage);
+secondStageButton.mousePressed(() => {
+  console.log("🟡 點擊了第二階段按鈕，當下狀態為：", {
+    selectedIndividual: window.selectedIndividual,
+    selectedRawIndividual: window.selectedRawIndividual,
+    lastSelectedRawIndividual: window.lastSelectedRawIndividual,
+    snapshot: window.selectedSnapshot
+  });
+  startSecondStage();
+});
+
 secondStageButton.hide(); // 一開始先隱藏
 
 }
